@@ -1,0 +1,19 @@
+#!/usr/bin/env groovy
+
+properties([
+    buildDiscarder(logRotator(numToKeepStr: '20', daysToKeepStr: '4')),
+    disableConcurrentBuilds(),
+    parameters([
+        string(name: 'Version', defaultValue: '3.2', description: 'The Product version')
+        booleanParam(name: 'ForceFailure', defaultValue: false, description: 'Force a failure?')
+    ])
+])
+
+node('docker') {
+    cron('H(0-30) 0-23/4 * * *')
+    stage('Checkout pipeline') {
+        checkout scm
+    }
+    def pipeline = load "common/pipeline.groovy"
+    pipeline.run(params)
+}
