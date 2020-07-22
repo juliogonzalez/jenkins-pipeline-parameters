@@ -10,10 +10,12 @@ node('docker') {
             booleanParam(name: 'ForceFailure', defaultValue: false, description: 'Force a failure?')
         ])
     ])
-
-    stage('Checkout pipeline') {
-        checkout scm
+    timeout(activity: true, time: 60, unit: 'SECONDS') {
+      stage('Checkout pipeline') {
+          checkout scm
+      }
+      def pipeline = load "common/pipeline.groovy"
+      pipeline.run(params)
+      sh "sleep 5"
     }
-    def pipeline = load "common/pipeline.groovy"
-    pipeline.run(params)
 }
